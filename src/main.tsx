@@ -1,10 +1,30 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import App from "./App";
+import TaskPage from "./pages/TaskPage";
+import EditTaskPage from "./pages/EditTaskPage";
+import { TaskProvider } from "./state/taskContext";
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+// Se crea la configuración de rutas para la aplicación
+const router = createBrowserRouter([
+  {
+    path: "/", // Ruta raíz
+    element: <App />, // Componente layout principal
+    children: [
+      { index: true, element: <TaskPage /> }, // Ruta "/" (home), muestra TaskPage
+      { path: "edit/:id", element: <EditTaskPage /> }, // Ruta "/edit/123", muestra EditTaskPage
+    ],
+  },
+]);
+
+// Se monta la aplicación en el elemento con id "root"
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    {/* TaskProvider envuelve toda la app para proveer el contexto de tareas */}
+    <TaskProvider>
+      {/* Proveedor de rutas, gestiona la navegación */}
+      <RouterProvider router={router} />
+    </TaskProvider>
+  </React.StrictMode>
+);
