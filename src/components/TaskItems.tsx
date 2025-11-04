@@ -1,37 +1,42 @@
 import { Link } from "react-router-dom";
-import { useTaskDispatch } from "../state/taskContext";
+import { useTasks, useTaskDispatch } from "../state/taskContext";
+import { useTasksRepo } from "../hooks/useTasksRepo";
 import type { Task } from "../state/types";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Checkbox from "@mui/material/Checkbox";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 // Componente para mostrar una tarea individual
-export default function TaskItem({ task }: { task: Task }) {
-  // Obtiene la función dispatch para modificar el estado de la tarea
+type TaskItemProps = {
+  task: Task;
+};
+
+export default function TaskItem({ task }: TaskItemProps) {
+  const tasks = useTasks();
   const dispatch = useTaskDispatch();
-
+  const { toggle, remove } = useTasksRepo(tasks, dispatch);
   return (
-    <li style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0" }}>
-      {/* Checkbox para marcar la tarea como hecha o pendiente */}
-      <input
-        type="checkbox"
-        checked={task.done}
-        onChange={() => dispatch({ type: "toggle", payload: { id: task.id } })}
-        aria-label={task.done ? "Marcar como pendiente" : "Marcar como hecha"}
-      />
-
-      {/* Muestra el título de la tarea, tachado si está hecha */}
-      <span style={{ flex: 1, textDecoration: task.done ? "line-through" : "none" }}>
-        {task.title}
-      </span>
-
-      {/* Enlace para editar la tarea */}
-      <Link to={`/edit/${task.id}`}>Editar</Link>
-
-      {/* Botón para eliminar la tarea */}
-      <button
-        onClick={() => dispatch({ type: "remove", payload: { id: task.id } })}
-        aria-label="Eliminar tarea"
-      >
-        🗑
-      </button>
-    </li>
+    <Card variant="outlined" sx={{ mb: 2 }}>
+      <CardContent sx={{ display: "flex", alignItems: "center", gap: 2, p: 1 }}>
+        <Checkbox
+          checked={task.done}
+          onChange={() => toggle(task.id)}
+          inputProps={{ "aria-label": task.done ? "Marcar como pendiente" : "Marcar como hecha" }}
+        />
+        <Typography sx={{ flex: 1, textDecoration: task.done ? "line-through" : "none" }}>
+          {task.title}
+        </Typography>
+        <IconButton component={Link} to={`/edit/${task.id}`} aria-label="Editar tarea" color="primary">
+          <EditIcon />
+        </IconButton>
+        <IconButton onClick={() => remove(task.id)} aria-label="Eliminar tarea" color="error">
+          <DeleteIcon />
+        </IconButton>
+      </CardContent>
+    </Card>
   );
 }

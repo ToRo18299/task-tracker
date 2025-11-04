@@ -1,6 +1,8 @@
-import { createContext, useContext, useEffect, useReducer } from 'react'  // <-- agrega useEffect
+
+import { createContext, useContext, useEffect, useReducer } from 'react'
 import { taskReducer } from './taskreducer'
 import type { Task, TaskAction } from './types'
+import { mockTasks } from '../lib/tasksRepo'
 
 const TaskStateCtx = createContext<Task[] | undefined>(undefined)
 const TaskDispatchCtx = createContext<React.Dispatch<TaskAction> | undefined>(undefined)
@@ -10,9 +12,11 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(taskReducer, [], () => {
     try {
       const raw = localStorage.getItem('tasks')
-      return raw ? (JSON.parse(raw) as Task[]) : []
+      if (raw) return JSON.parse(raw) as Task[]
+      // Si no hay tareas en localStorage, usar mockTasks
+      return [...mockTasks]
     } catch {
-      return []
+      return [...mockTasks]
     }
   })
 

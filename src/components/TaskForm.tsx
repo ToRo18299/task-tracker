@@ -1,40 +1,55 @@
 
 import { useState, type FormEvent } from "react";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import MenuItem from "@mui/material/MenuItem";
 
 // Props: función que se llama al añadir una tarea
-type Props = { onAdd: (title: string) => void };
+type Props = { onAdd: (data: { title: string; project: string }) => void };
+
 
 // Componente para el formulario de nueva tarea
 export default function TaskForm({ onAdd }: Props) {
-  // Estado local para el input de la tarea
   const [title, setTitle] = useState("");
-  // Valida que el título tenga al menos 3 caracteres
+  const [project, setProject] = useState("TG");
   const isValid = title.trim().length >= 3;
 
-  // Maneja el envío del formulario
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!isValid) return;
-    onAdd(title.trim()); // llama a la función para añadir la tarea
-    setTitle(""); // limpia el input después de añadir
+    onAdd({ title: title.trim(), project });
+    setTitle("");
+    setProject("TG");
   }
 
   return (
-    <form onSubmit={handleSubmit} aria-label="Añadir tarea" style={{ display: "flex", gap: 8, margin: "12px 0" }}>
-      {/* Etiqueta oculta para accesibilidad */}
-      <label htmlFor="title" className="sr-only">Nueva tarea</label>
-      {/* Input controlado para el título de la tarea */}
-      <input
+    <Box component="form" onSubmit={handleSubmit} aria-label="Añadir tarea" sx={{ display: "flex", gap: 2, my: 2 }}>
+      <TextField
         id="title"
+        label="Nueva tarea"
         placeholder="Ej: Comprar tornillos"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        style={{ flex: 1, padding: 8 }}
+        variant="outlined"
+        size="small"
+        sx={{ flex: 1 }}
       />
-      {/* Botón para enviar el formulario, deshabilitado si el título no es válido */}
-      <button type="submit" disabled={!isValid}>
+      <TextField
+        select
+        label="Proyecto"
+        value={project}
+        onChange={e => setProject(e.target.value)}
+        size="small"
+        sx={{ minWidth: 120 }}
+      >
+        {['TG', 'Chiper', 'Ingles', 'Running', 'GYM'].map(p => (
+          <MenuItem key={p} value={p}>{p}</MenuItem>
+        ))}
+      </TextField>
+      <Button type="submit" variant="contained" disabled={!isValid}>
         Añadir
-      </button>
-    </form>
+      </Button>
+    </Box>
   );
 }
