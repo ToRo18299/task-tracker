@@ -12,8 +12,8 @@ const router = createBrowserRouter([
     path: "/", // Ruta raíz
     element: <App />, // Componente layout principal
     children: [
-      { index: true, element: <TaskPage /> }, // Ruta "/" (home), muestra TaskPage
-      { path: "edit/:id", element: <EditTaskPage /> }, // Ruta "/edit/123", muestra EditTaskPage
+  { index: true, element: <TaskPage /> }, // Ruta "/" (home), muestra TaskPage
+  { path: "edit/:id", element: <EditTaskPage /> }, // Ruta de edición
     ],
   },
 ]);
